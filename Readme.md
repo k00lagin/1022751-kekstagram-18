@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Всеволод Кулагин](https://up.htmlacademy.ru/javascript/18/user/1022751).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Рубец](https://up.htmlacademy.ru/javascript/18/user/41580).
 
 ---
 
