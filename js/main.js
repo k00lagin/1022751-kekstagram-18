@@ -65,7 +65,7 @@ function generateFakePhotos(amount) {
 
 function addPhotosToPage() {
   var picturesFragment = document.createDocumentFragment();
-  generateFakePhotos(25).forEach(function(photoDescription) {
+  generateFakePhotos(25).forEach(function (photoDescription) {
     picturesFragment.appendChild(generatePhotoElement(photoDescription));
   });
   document.querySelector('.pictures').appendChild(picturesFragment);
