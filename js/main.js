@@ -38,6 +38,8 @@ var MAX_LIKES = 200;
 var MIN_COMMENTS = 0;
 var MAX_COMMENTS = 3;
 
+var photos = [];
+
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -75,7 +77,6 @@ function generatePhotoElement(photoDescription) {
 }
 
 function generateFakePhotos() {
-  var photos = [];
   for (var i = FIRST_FAKE_PHOTO_INDEX; i <= AMOUNT_OF_FAKE_PHOTOS; i++) {
     photos.push(generateFakePhotoDescription(i));
   }
@@ -90,4 +91,37 @@ function fillPageWFakePhotos() {
   document.querySelector('.pictures').appendChild(picturesFragment);
 }
 
+function showBigPicture(photoIndex) {
+  var bigPictureNode = document.querySelector('.big-picture');
+  bigPictureNode.classList.remove('hidden');
+  bigPictureNode.querySelector('.big-picture__img > img').src = photos[photoIndex].url;
+  bigPictureNode.querySelector('.likes-count').textContent = photos[photoIndex].likes;
+  bigPictureNode.querySelector('.comments-count').textContent = photos[photoIndex].comments.length;
+  bigPictureNode.querySelector('.social__caption').textContent = photos[photoIndex].description;
+  bigPictureNode.querySelector('.social__comments').innerHTML = '';
+  bigPictureNode.querySelector('.social__comment-count').classList.add('visually-hidden');
+  bigPictureNode.querySelector('.comments-loader').classList.add('visually-hidden');
+  var commentsFragment = document.createDocumentFragment();
+  photos[photoIndex].comments.forEach(function (comment) {
+    var commentNode = document.createElement('li');
+    commentNode.classList.add('social__comment');
+
+    var commentImg = document.createElement('img');
+    commentImg.classList.add('social__picture');
+    commentImg.src = comment.avatar;
+    commentImg.alt = comment.name;
+    commentImg.width = commentImg.height = '35';
+    commentNode.appendChild(commentImg);
+
+    var commentText = document.createElement('p');
+    commentText.textContent = comment.message;
+    commentText.classList.add('social__text');
+    commentNode.appendChild(commentText);
+
+    commentsFragment.appendChild(commentNode);
+  });
+  bigPictureNode.querySelector('.social__comments').appendChild(commentsFragment);
+}
+
 fillPageWFakePhotos();
+showBigPicture(0);
