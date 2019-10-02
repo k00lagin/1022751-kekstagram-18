@@ -38,6 +38,53 @@ var MAX_LIKES = 200;
 var MIN_COMMENTS = 0;
 var MAX_COMMENTS = 3;
 
+var SCALE = {
+  STEP: 25,
+  MIN: 25,
+  MAX: 100,
+  DEFAULT: 100
+};
+
+var EFFECTS = {
+  construct: function (effect, value) {
+    if (effect === 'none') {
+      return '';
+    }
+    var scaledValue = value * (EFFECTS[effect].max - EFFECTS[effect].min) / 100 + EFFECTS[effect].min;
+    if (EFFECTS[effect].postfix) {
+      scaledValue += EFFECTS[effect].postfix;
+    }
+    return 'filter: ' + EFFECTS[effect].filter + '(' + scaledValue + ');';
+  },
+  chrome: {
+    filter: 'grayscale',
+    min: 0,
+    max: 1
+  },
+  sepia: {
+    filter: 'sepia',
+    min: 0,
+    max: 1
+  },
+  marvin: {
+    filter: 'invert',
+    min: 0,
+    max: 100,
+    postfix: '%'
+  },
+  phobos: {
+    filter: 'blur',
+    min: 0,
+    max: 3,
+    postfix: 'px'
+  },
+  heat: {
+    filter: 'brightness',
+    min: 1,
+    max: 3
+  }
+};
+
 var photos = [];
 
 function getRandomNumber(min, max) {
@@ -124,4 +171,49 @@ function showBigPicture(photoIndex) {
 }
 
 fillPageWFakePhotos();
-showBigPicture(0);
+// showBigPicture(0);
+
+function initPhotoUploader() {
+  document.querySelector('#upload-file').addEventListener('change', function () {
+    document.querySelector('.img-upload__overlay').classList.remove('hidden');
+    document.querySelector('.scale__control--value').value = SCALE.DEFAULT + '%';
+  });
+  document.querySelector('.img-upload__cancel').addEventListener('click', function () {
+    document.querySelector('.img-upload__overlay').classList.add('hidden');
+    document.querySelector('#upload-file').value = '';
+    document.querySelector('#effect-none').checked = true;
+  });
+
+  function handleScaleControlBiggerClick(e) {
+    var scaleControlInput = document.querySelector('.scale__control--value');
+    var scale = Number(scaleControlInput.value.slice(0, -1));
+    scale += SCALE.STEP;
+    scale = scale < SCALE.MAX ? scale : SCALE.MAX;
+    scaleControlInput.value = scale + '%';
+    scalePhoto(scale);
+  }
+
+  function handleScaleControlSmallerClick(e) {
+    var scaleControlInput = document.querySelector('.scale__control--value');
+    var scale = Number(scaleControlInput.value.slice(0, -1));
+    scale -= SCALE.STEP;
+    scale = scale > SCALE.MIN ? scale : SCALE.MIN;
+    scaleControlInput.value = scale + '%';
+    scalePhoto(scale);
+  }
+
+  function scalePhoto(scale) {
+    document.querySelector('.img-upload__preview img').style = 'transform: scale(' + scale / 100 + ')';
+  }
+
+  document.querySelector('.scale__control--bigger').addEventListener('click', handleScaleControlBiggerClick);
+  document.querySelector('.scale__control--smaller').addEventListener('click', handleScaleControlSmallerClick);
+}
+
+initPhotoUploader();
+
+Array.prototype.slice.call(document.querySelectorAll('.effects__radio')).forEach(function (radioButton) {
+  radioButton.addEventListener('change', function (e) {
+    document.querySelector('.img-upload__preview img').style = EFFECTS.construct(e.target.id.split('effect-')[1], 100);
+  });
+});
