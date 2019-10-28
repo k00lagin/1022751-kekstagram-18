@@ -1,5 +1,6 @@
 'use strict';
 // TASK DEFINED CONSTANTS
+var tags;
 var FAKE_COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -177,6 +178,7 @@ function initPhotoUploader() {
   document.querySelector('#upload-file').addEventListener('change', function () {
     document.querySelector('.img-upload__overlay').classList.remove('hidden');
     document.querySelector('.scale__control--value').value = SCALE.DEFAULT + '%';
+    document.querySelector('.img-upload__effect-level.effect-level').classList.add('hidden');
   });
   document.querySelector('.img-upload__cancel').addEventListener('click', function () {
     document.querySelector('.img-upload__overlay').classList.add('hidden');
@@ -206,6 +208,18 @@ function initPhotoUploader() {
     document.querySelector('.img-upload__preview img').style = 'transform: scale(' + scale / 100 + ')';
   }
 
+  function handleHashtagsChange(e) {
+    var message = '';
+    tags = e.target.value.toLowerCase().split(' ');
+    if (tags.some(function (tag) {
+      return tag[0] !== '#';
+    })) {
+      message += 'хэш-тег начинается с символа # (решётка);';
+    }
+    document.querySelector('.text__hashtags').setCustomValidity(message);
+  }
+
+  document.querySelector('.text__hashtags').addEventListener('change', handleHashtagsChange);
   document.querySelector('.scale__control--bigger').addEventListener('click', handleScaleControlBiggerClick);
   document.querySelector('.scale__control--smaller').addEventListener('click', handleScaleControlSmallerClick);
 }
@@ -215,5 +229,11 @@ initPhotoUploader();
 Array.prototype.slice.call(document.querySelectorAll('.effects__radio')).forEach(function (radioButton) {
   radioButton.addEventListener('change', function (e) {
     document.querySelector('.img-upload__preview img').style = EFFECTS.construct(e.target.id.split('effect-')[1], 100);
+    if (e.target.id === 'effect-none') {
+      document.querySelector('.img-upload__effect-level.effect-level').classList.add('hidden');
+    }
+    else {
+      document.querySelector('.img-upload__effect-level.effect-level').classList.remove('hidden');
+    }
   });
 });
